@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -85,37 +86,92 @@ h2 {
 </head>
 
 
-<body>
 
+<body>
 <div class="centered" id="container"></div>
 
 <script src="https://cdn.rawgit.com/kimmobrunfeldt/progressbar.js/0.5.6/dist/progressbar.js"></script>
 
-<script src="{% static easy_circle.js %}"></script>
+<script>
+// progressbar.js@1.0.0 version is used
+// Docs: http://progressbarjs.readthedocs.org/en/1.0.0/
+
+var bar = new ProgressBar.Circle(container, {
+  strokeWidth: 20,
+  easing: 'easeInOut',
+  duration: 1400,
+  color: '#6dc066',
+  trailColor: '#eee',
+  trailWidth: 1,
+  svgStyle: null
+});
+
+bar.animate(0.77);
+</script>
 
 <div class="centered">
-    <img src="plant-pic.png" alt="Herb">
+  <img src="{% static "img/plant-pic.png" %}" alt="Herb" id="plant-mascot" style="width: 100px"/>
+    <!-- <img src="plant-pic.png" alt="Herb"> -->
 </div>
 
+
+<div class='container'>
 <div class="split left">
   <div class="l_text">
     <!--<img src="plant-pic.png" alt="Avatar woman">-->
     <h2>How healthy is your plant?</h2>
     <p>(Dropdown for plant selection, input for sensor readings, possibly a box for wikipedia info on the plant, and another box for the NASA air quality properties of your plant (if its available).)</p>
+    <form id="srxForm" method='POST'>
+      {% csrf_token %}
+      <select id="plant_sel" name="which_plant" value={{plant_selected}}>
+        <option>
+          {{plant_selected}}
+        </option>
+        {% for item in plant_names %}
+        <option>
+          {{item}}
+        </option>
+        {% endfor %}
+      </select>
+    <button >OK</button>
+    <br />
+    {% if plant_selected %}
+    <br />
+    Plant: {{plant_selected}}
+    <br />
+    <br />
+    Light Level: {{Light_Level}}
+    <br />
+    <br />
+    Temperature: {{Temp}}
+    <br />
+    <br />
+    Humidity: {{Humidity}}
+
+    {% endif %}
+    {% for i in imgs %}
+      <img src="{% static 'img/{{i}}' %}" alt="img/{{i}}" />
+    {% endfor %}
   </div>
-  <!--<div class="left">-->
-      <!--<p> </p>-->
-  <!--</div>-->
 </div>
 
 <div class="split right">
-  <div class="r_text">
+  <div class="centered r_text">
     <!--<img src="plant-pic.png" alt="Avatar man">-->
     <h2>Based on your environment....</h2>
     <p>You should get a XXX plant!<br /><br />Information on how closely your sensory readings match the suggested plant, a wiki box about the suggested plant etc...(nearest garden centre shopping suggestions, plant care tips etc)</p>
+    <button>Take Readings</button>
+
+    <h4>Current Temp: {{curr_temp}} <sup>o</sup>C</h4>
+    <h4>Current Humid: {{curr_humid}} %</h4>
+    <h4>Current Light Level: {{curr_light}}</h4>
   </div>
+
+</div>
 </div>
 
+
+</form>
 
 </body>
 </html>
