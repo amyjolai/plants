@@ -23,8 +23,11 @@ def index(request):
         context['Temp'] = vals['T']
         context['Humidity'] = vals['H']
         context['Soil'] = plant_data['S'].iloc[0]
-        context['imgs'] = [i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/mysite/GUI/static/img') if plant_selected in i]
+        context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:4]
     context['curr_temp'],context['curr_humid'],context['curr_light'] = takeReading()
+    if context['plant_selected'] == False:
+        context['plant_selected'] = data.iloc[0]['Common Name']
+    context['plant_hap'] = 77
     return render(request, "GUI/index.html",context)
 
 def convert_to_human_readable(vals):
@@ -35,8 +38,9 @@ def convert_to_human_readable(vals):
     vals['L'] = vals['L'].replace('3', 'Shade')
 
     vals['T'] = vals['T'].replace('1', 'Cool ~18 <sup>o</sup>1C')
-    vals['T'] = vals['T'].replace("2", "Normal Room Temp ~23 <sup>o</sup>C")
+    vals['T'] = vals['T'].replace("2", "Normal Room Temp ~$RT <sup>o</sup>C")
     vals['T'] = vals['T'].replace("3", "Warm ~29 <sup>o</sup>C")
+    vals['T'] = vals['T'].replace("$RT", "23")
 
     vals['H'] = vals['H'].replace("1", "High >50%")
     vals['H'] = vals['H'].replace("2", "Medium 25% to 50%")
@@ -48,5 +52,5 @@ def convert_to_human_readable(vals):
     return vals
 
 def takeReading():
-    Temp, Humid, Light = rd.randint(25,30), rd.randint(20,40), rd.randint(10,10000)
+    Temp, Humid, Light = rd.randint(18,30), rd.randint(20,90), rd.randint(10,10000)
     return Temp, Humid, Light
