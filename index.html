@@ -43,6 +43,22 @@ body {
     text-align: center;
 }
 
+.l_text{
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: left;
+}
+
+.r_text{
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: right;
+}
+
 .centered img {
     /*width: 250px;*/
     /*position: static;*/
@@ -57,6 +73,10 @@ body {
 /*width: auto\9; !* ie8 *!*/
 /*}*/
 
+h2 {
+    font-size:2.5em;
+}
+
 </style>
 </head>
 
@@ -68,7 +88,7 @@ body {
 </div>
 
 <div class="split left">
-  <div class="centered">
+  <div class="l_text">
     <!--<img src="plant-pic.png" alt="Avatar woman">-->
     <h2>Happy side</h2>
     <p>Some text. Yayayayayayayyyayayyyayayyyayyya. nvwjiefheui2qinhcfwoferiwe nfihefiweufhmqwehfroihewfirawehfiahewfifu.</p>
@@ -76,10 +96,10 @@ body {
 </div>
 
 <div class="split right">
-  <div class="centered">
+  <div class="centered r_text">
     <!--<img src="plant-pic.png" alt="Avatar man">-->
     <h2>Unhappy side</h2>
-    <p>Some text here too.</p>
+    <p>Some text here too.  Text and headings don't seem to be fixed but move up n down dependent on the amount of text. Fix this.</p>
   </div>
 </div>
 
