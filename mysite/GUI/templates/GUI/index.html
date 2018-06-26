@@ -208,7 +208,12 @@ bar.animate(parseFloat("{{plant_hap_dec}}"));
   <div class="r_text">
     <!--<img src="plant-pic.png" alt="Avatar man">-->
     <h2>Based on your environment....</h2>
-    <p>You should get a {{plant_to_get}} plant!<br /><br />Information on how closely your sensory readings match the suggested plant, a wiki box about the suggested plant etc...(nearest garden centre shopping suggestions, plant care tips etc)</p>
+    <p>You should get a {{plant_to_get}} plant!</p>
+    <div>
+      {% for i in plant_to_get_imgs %}
+        <img src="{% static i %}" alt="{{i}}" id="plant-mascot" style="width: 100px; height:100px;"/>
+      {% endfor %}
+    </div>
     <button>Take Readings</button>
 
     <h4>Current Temp: {{curr_temp}} <sup>o</sup>C</h4>

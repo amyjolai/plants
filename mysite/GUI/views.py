@@ -69,6 +69,7 @@ def index(request):
         context['plant_hap_dec'] = data['happiness_index'].iloc[0]
         context['plant_hap_tanh'] = np.tanh((data['happiness_index'].iloc[0]-0.5)*5)*0.5 + 0.5
         context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:4]
+        context['plant_to_get_imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if context['plant_to_get'].replace(' ','_').replace('’','') in i][:4]
         context['col'] = create_color(context['plant_hap'])
     context['curr_temp'],context['curr_humid'],context['curr_light'] = in_vals['T'], in_vals['H'],in_vals['L']
 
