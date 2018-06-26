@@ -124,7 +124,7 @@ bar.animate(parseFloat("{{plant_hap_dec}}"));
 <div class="centered">
   <div class="relative">
     <h1>{{plant_hap}}</h1>
-  <img src="{% static "img/plant-pic.png" %}" alt="" style="opacity: 0.4;">
+  <img src="{% static "img/plant-pic.png" %}" alt="" style="opacity:{{plant_hap_tanh}};">
   <p class="absolute-text">Plant Happiness = {{plant_hap}}%</p>
 </div>
   <!-- <img src="{% static "img/plant-pic.png" %}" alt="Herb" id="plant-mascot" style="opacity: 40%; position:absolute;"/> -->

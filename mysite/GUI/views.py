@@ -27,16 +27,20 @@ def create_happiness_index(data, vals):
     data['Wdiff'] = data['W'].apply(convert_W)
 
     weights = {'L':1,
-            'T':0.7,
-            'H':0.4,
-            'W':0.8,}
+            'T':0.0,
+            'H':0.0,
+            'W':0.0,}
 
     data['happiness_index'] = 0.0
     for i in ['L','T','H','W']:
         data['%sdiff'%i] = np.abs(weights[i]*(data["%sdiff"%i]-vals[i]))
-        data['%sdiff'%i] = data['%sdiff'%i]/np.max(data['%sdiff'%i])
+        max_val, min_val = np.max(data['%sdiff'%i]), np.min(data['%sdiff'%i])
+        if max_val > 0 and min_val < max_val:
+            data['%sdiff'%i] = ( data['%sdiff'%i]-min_val )/(max_val- min_val)
         data['happiness_index'] += data['%sdiff'%i]
     data['happiness_index'] /= sum(weights.values())
+    data['happiness_index'] = 1-data['happiness_index']
+
     return data
 
 def index(request):
@@ -59,8 +63,11 @@ def index(request):
         context['Temp'] = vals['T']
         context['Humidity'] = vals['H']
         context['Soil'] = plant_data['S'].iloc[0]
+        randint = rd.randint(0,10)
+        context['plant_to_get'] = data.sort_values('happiness_index').iloc[randint]['Common Name']
         context['plant_hap'] = "%.0f"%(data['happiness_index'].iloc[0]*100)
         context['plant_hap_dec'] = data['happiness_index'].iloc[0]
+        context['plant_hap_tanh'] = np.tanh((data['happiness_index'].iloc[0]-0.5)*5)*0.5 + 0.5
         context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:4]
         context['col'] = create_color(context['plant_hap'])
     context['curr_temp'],context['curr_humid'],context['curr_light'] = in_vals['T'], in_vals['H'],in_vals['L']
