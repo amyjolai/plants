@@ -18,7 +18,9 @@ def convert_W(val):
     return (0.5*np.mean([int(i) for i in val.split('-')])) -0.5
 
 def create_color(happiness):
-    return ','.join([str(-2.55*float(happiness)+255), str(2.55*float(happiness)),  '0'])
+    r = 255-127*(np.tanh((float(happiness)-65)*0.05) +1)
+    g = 127*(np.tanh((float(happiness)-35)*0.05) +1)
+    return ','.join([str(r), str(g),  '0'])
 
 def create_happiness_index(data, vals):
     data['Ldiff'] = data['L'].apply(convert_L)
@@ -77,10 +79,11 @@ def index(request):
 
 def convert_to_human_readable(vals):
     vals = {i:vals[i].replace("-"," to ") for i in vals}
-    vals['L'] = vals['L'].replace('1', '4 hrs direct sun')
+    vals['L'] = vals['L'].replace('1', '$FOUR hrs direct sun')
     vals['L'] = vals['L'].replace('2', '<1hr direct sun')
     vals['L'] = vals['L'].replace('3', 'Partial Shade')
-    vals['L'] = vals['L'].replace('3', 'Shade')
+    vals['L'] = vals['L'].replace('4', 'Shade')
+    vals['L'] = vals['L'].replace("$FOUR", "4")
 
     vals['T'] = vals['T'].replace('1', 'Cool ~18 <sup>o</sup>1C')
     vals['T'] = vals['T'].replace("2", "Normal Room Temp ~$RT <sup>o</sup>C")
