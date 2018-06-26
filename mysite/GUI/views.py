@@ -48,6 +48,9 @@ def create_happiness_index(data, vals):
 def index(request):
     form = request.POST #Parse info from the webpage form
     plant_selected = form.get("which_plant")
+    print(plant_selected)
+    if plant_selected == None or 'Select' in plant_selected:
+        plant_selected = False
 
     in_vals = takeReading()
 
@@ -56,7 +59,7 @@ def index(request):
     context = {'plant_names':data['Common Name']}
     # print(context)
     context['plant_selected'] = False
-    if plant_selected != None:
+    if plant_selected != False:
         context['plant_selected'] = plant_selected
         data = create_happiness_index(data, in_vals)
         plant_data = data[data['Common Name'] == plant_selected]
@@ -70,7 +73,7 @@ def index(request):
         context['plant_hap'] = "%.0f"%(data['happiness_index'].iloc[0]*100)
         context['plant_hap_dec'] = data['happiness_index'].iloc[0]
         context['plant_hap_tanh'] = np.tanh((data['happiness_index'].iloc[0]-0.5)*5)*0.5 + 0.5
-        context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:4]
+        context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:2]
         context['plant_to_get_imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if context['plant_to_get'].replace(' ','_').replace('’','') in i][:4]
         context['col'] = create_color(context['plant_hap'])
     context['curr_temp'],context['curr_humid'],context['curr_light'] = in_vals['T'], in_vals['H'],in_vals['L']
