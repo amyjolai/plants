@@ -3,31 +3,68 @@ from django.shortcuts import render
 import pandas as pd
 import random as rd
 import os
-# Create your views here.
+import numpy as np
+
+def convert_L(val):
+    return (8000*np.mean([int(i) for i in val.split('-')])) - 7800
+
+def convert_T(val):
+    return (5.5*np.mean([int(i) for i in val.split('-')])) + 12
+
+def convert_H(val):
+    return (27.5*np.mean([int(i) for i in val.split('-')])) -16.
+
+def convert_W(val):
+    return (0.5*np.mean([int(i) for i in val.split('-')])) -0.5
+
+def create_color(happiness):
+    return ','.join([str(-2.55*float(happiness)+255), str(2.55*float(happiness)),  '0'])
+
+def create_happiness_index(data, vals):
+    data['Ldiff'] = data['L'].apply(convert_L)
+    data['Tdiff'] = data['T'].apply(convert_T)
+    data['Hdiff'] = data['H'].apply(convert_H)
+    data['Wdiff'] = data['W'].apply(convert_W)
+
+    weights = {'L':1,
+            'T':0.7,
+            'H':0.4,
+            'W':0.8,}
+
+    data['happiness_index'] = 0.0
+    for i in ['L','T','H','W']:
+        data['%sdiff'%i] = np.abs(weights[i]*(data["%sdiff"%i]-vals[i]))
+        data['%sdiff'%i] = data['%sdiff'%i]/np.max(data['%sdiff'%i])
+        data['happiness_index'] += data['%sdiff'%i]
+    data['happiness_index'] /= sum(weights.values())
+    return data
 
 def index(request):
     form = request.POST #Parse info from the webpage form
     plant_selected = form.get("which_plant")
 
+    in_vals = takeReading()
+
     data = pd.read_csv("/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plant_data_with_webpages.csv")
-    data = data.sort_values("Common Name")
+    data = data.sort_values("Common Name").drop_duplicates("Common Name")
     context = {'plant_names':data['Common Name']}
     # print(context)
     context['plant_selected'] = False
     if plant_selected != None:
         context['plant_selected'] = plant_selected
+        data = create_happiness_index(data, in_vals)
         plant_data = data[data['Common Name'] == plant_selected]
         vals = convert_to_human_readable({i:plant_data[i].iloc[0] for i in ['L','T','H','W']})
-        print(vals)
         context['Light_Level'] = vals['L']
         context['Temp'] = vals['T']
         context['Humidity'] = vals['H']
         context['Soil'] = plant_data['S'].iloc[0]
+        context['plant_hap'] = "%.0f"%(data['happiness_index'].iloc[0]*100)
+        context['plant_hap_dec'] = data['happiness_index'].iloc[0]
         context['imgs'] = ['img/'+i for i in os.listdir('/home/oem/Documents/Other/Code/Hackathon-UCL-2018/plants/mysite/GUI/static/img') if plant_selected.replace(' ','_').replace('’','') in i][:4]
-    context['curr_temp'],context['curr_humid'],context['curr_light'] = takeReading()
-    if context['plant_selected'] == False:
-        context['plant_selected'] = data.iloc[0]['Common Name']
-    context['plant_hap'] = 77
+        context['col'] = create_color(context['plant_hap'])
+    context['curr_temp'],context['curr_humid'],context['curr_light'] = in_vals['T'], in_vals['H'],in_vals['L']
+
     return render(request, "GUI/index.html",context)
 
 def convert_to_human_readable(vals):
@@ -52,5 +89,7 @@ def convert_to_human_readable(vals):
     return vals
 
 def takeReading():
-    Temp, Humid, Light = rd.randint(18,30), rd.randint(20,90), rd.randint(10,10000)
-    return Temp, Humid, Light
+    return {'T': rd.randint(18,30),
+            'H': rd.randint(20,90),
+            'L': rd.randint(10,10000),
+            'W': rd.randint(0,10)/10.,}

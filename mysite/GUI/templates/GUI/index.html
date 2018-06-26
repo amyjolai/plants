@@ -106,8 +106,8 @@ padding:10px 20px; width:100%; text-align:center;}
 var bar = new ProgressBar.Circle(container, {
   strokeWidth: 20,
   easing: 'easeInOut',
-  duration: 1400,
-  color: '#6dc066',
+  duration: 1600,
+  color: 'rgb({{col}})',
   trailColor: '#eee',
   trailWidth: 1,
   svgStyle: null
@@ -115,13 +115,14 @@ var bar = new ProgressBar.Circle(container, {
 
 
 
-bar.animate(0.77);
+bar.animate(parseFloat("{{plant_hap_dec}}"));
 </script>
 
 <div class="centered">
   <div class="relative">
+    <h1>{{plant_hap}}</h1>
   <img src="{% static "img/plant-pic.png" %}" alt="" style="opacity: 0.4;">
-  <p class="absolute-text" style=":-200px;">Plant Happiness = {{plant_hap}}%</p>
+  <p class="absolute-text">Plant Happiness = {{plant_hap}}%</p>
 </div>
   <!-- <img src="{% static "img/plant-pic.png" %}" alt="Herb" id="plant-mascot" style="opacity: 40%; position:absolute;"/> -->
     <!-- <img src="plant-pic.png" alt="Herb"> -->
@@ -136,16 +137,24 @@ bar.animate(0.77);
     <p>(Dropdown for plant selection, input for sensor readings, possibly a box for wikipedia info on the plant, and another box for the NASA air quality properties of your plant (if its available).)</p>
     <form id="srxForm" method='POST'>
       {% csrf_token %}
+      {% if plant_selected %}
       <select id="plant_sel" name="which_plant" value={{plant_selected}}>
-        <option>
-          {{plant_selected}}
-        </option>
+        <option>{{plant_selected}}</option>
         {% for item in plant_names %}
         <option>
           {{item}}
         </option>
         {% endfor %}
       </select>
+      {% else %}
+      <select id="plant_sel" name="which_plant" value={{plant_selected}}>
+        {% for item in plant_names %}
+        <option>
+          {{item}}
+        </option>
+        {% endfor %}
+      </select>
+      {% endif %}
     <button >OK</button>
     <br />
     {% if plant_selected %}
@@ -184,12 +193,11 @@ bar.animate(0.77);
       </td>
     </tr>
     </table>
-
+      <br />
+      {% for i in imgs %}
+        <img src="{% static i %}" alt="{{i}}" id="plant-mascot" style="width: 180px; height:180px;"/>
+      {% endfor %}
     {% endif %}
-    <br />
-    {% for i in imgs %}
-      <img src="{% static i %}" alt="{{i}}" id="plant-mascot" style="width: 180px; height:180px;"/>
-    {% endfor %}
   </div>
 </div>
 
@@ -197,15 +205,30 @@ bar.animate(0.77);
   <div class="r_text">
     <!--<img src="plant-pic.png" alt="Avatar man">-->
     <h2>Based on your environment....</h2>
-    <p>You should get a XXX plant!<br /><br />Information on how closely your sensory readings match the suggested plant, a wiki box about the suggested plant etc...(nearest garden centre shopping suggestions, plant care tips etc)</p>
+    <p>You should get a {{plant_to_get}} plant!<br /><br />Information on how closely your sensory readings match the suggested plant, a wiki box about the suggested plant etc...(nearest garden centre shopping suggestions, plant care tips etc)</p>
     <button>Take Readings</button>
 
     <h4>Current Temp: {{curr_temp}} <sup>o</sup>C</h4>
     <h4>Current Humid: {{curr_humid}} %</h4>
     <h4>Current Light Level: {{curr_light}}</h4>
+    <div id="map" style="width:400px;height:400px;background:yellow"></div>
+y
+    <script>
+    function myMap() {
+    var mapOptions = {
+        center: new google.maps.LatLng(51.5, -0.12),
+        zoom: 10,
+        mapTypeId: google.maps.MapTypeId.HYBRID
+    }
+    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAd669FltIIA836LeXDIaw-isHY4kekBe0&callback=myMap"></script>
   </div>
 
 </div>
+
 </div>
 
 
